@@ -5,5 +5,5 @@
 - Easy login and logout means easy life
 
 Contibuted by 
-1. [Abhi Sharma](github.com/nerdyabhi)
+1. [Abhi Sharma](https://www.github.com/nerdyabhi)
 2. Add more 
