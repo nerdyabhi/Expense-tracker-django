@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    Welcome {{expense__user.name}}
+
+    <div class="container">
+        <form action="addTransaction" >
+            <input type="hidden" name = "email"  value="{{u.email}}">
+          <input type="text" name="expense_name" placeholder="Where spend?" required> <br>
+          <input type="number" name="amount" placeholder="Amount" > <br>
+          <input type="submit">
+          
+        </form>
+    </div>
+    
+
+    <div class="show">
+        <h1>Table name  : {{expense.user__email}}</h1>
+
+<table border="1px">
+    <tr>
+        <td>Description</td>
+        <td>Amount</td>
+    </tr>
+    {% for i in expense %}
+    <tr>
+        </tr><td>{{i.expense_name}}</td>
+        <td>{{i.amount}}</td>
+        
+        <!-- del/{{i.id}} associated id to href to know which id to delete -->
+    </tr>
+
+    {% endfor %}
+</table>
+
+<h3>Total Expense : {{total}}</h3>
+    </div>
+
+</body>
+</html>
