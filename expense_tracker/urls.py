@@ -11,6 +11,7 @@ urlpatterns = [
     path('addTransaction' , views.addTransaction),
     # path('editOrDelete' , views.editOrDelete),
     path('del/<int:id>' , views.delete_transaction),
+    path('edit/<int:id>' , views.editTransaction),
     # path('welcome' , views.welcome)
     
 ]

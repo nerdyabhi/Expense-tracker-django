@@ -127,14 +127,25 @@
         <tr>
             <td>{{ i.date }}</td>
             <td>
-                <input type="text" name="description" value="{{ i.expense_name }}" readonly>
+                <p id="description{{i.id}}">{{i.expense_name}}</p> 
             </td>
             <td>
-                <input type="number" name="amountInput" value="{{i.amount}}" readonly>
+                <p  id="amountInput{{i.id}}">{{i.amount}}</p> 
             </td>
+            <div id="change_form" style="display: none;">
+                <h1>Edit it</h1>
+                <form action="/../edit/{{i.id}}" method="get">
+                    <i id="closeBtn" class="fa-solid fa-square-xmark"></i>
+                    <input type="hidden" name="email" value="{{u.email}}">
+                    <input type="text" name="expense_name" placeholder="Enter expense description" required><br>
+                    <input type="number" name="amount" placeholder="Enter amount"><br>
+                    <input type="submit" value="Save changes">
+                </form>
+            </div>
+        </div>
             <td>
-                <input type="text" name="id" value="{{id}}" hidden>
-                <button onclick="enableEdit(this)" class="edit_btn"><i class="fa-regular fa-edit"></i></button>
+                <input type="text" name="id" value="{{i.id}}" hidden>
+                <button onclick="enableEdit({{i.id}})" class="edit_btn"><i class="fa-regular fa-edit"></i></button>
                 <a href="/../del/{{i.id}}">
                     <button type="button" name="delete_btn" class="delete_btn"><i class="fa-regular fa-trash-can"></i></button>
                 </a>
@@ -144,32 +155,22 @@
     </table>
     <div class="total"><h3>Total Expense {{total}} </h3></div>
 
-    <div id="change_form" style="display: none;">
-        <h1>Edit it</h1>
-        <form action="ChangeTransaction" method="get">
-            <i id="closeBtn" class="fa-solid fa-square-xmark"></i>
-            <input type="hidden" name="email" value="{{u.email}}">
-            <input type="text" name="expense_name" placeholder="Enter expense description" required><br>
-            <input type="number" name="amount" placeholder="Enter amount"><br>
-            <input type="submit" value="Save Changes">
-        </form>
-    </div>
-</div>
+  
 
 <script>
-function enableEdit(button) {
+function enableEdit(id) {
     // Get the parent element of the button, which is the table row
-    var row = button.parentNode.parentNode;
-    
-    // Get the change_form element
+   
     var changeForm = document.getElementById('change_form');
     
     // Set its display property to 'block'
     changeForm.style.display = 'block';
     
-    // Optionally, you can populate the input fields in the form with data from the selected row
-    var description = row.cells[1].querySelector('input[name="description"]').value;
-    var amount = row.cells[2].querySelector('input[name="amountInput"]').value;
+    // Optionally, you can populate the input fields izn the form with data from the selected row
+    var description = document.getElementById('description' + id).textContent;
+    var amount = document.getElementById('amountInput' + id).textContent;
+
+    // var description = getElementById('amountInput' + id).value
     
     changeForm.querySelector('input[name="expense_name"]').value = description;
     changeForm.querySelector('input[name="amount"]').value = amount;
@@ -179,6 +180,7 @@ function closeForm() {
     var changeForm = document.getElementById('change_form');
     changeForm.style.display = 'none';
 }
+
 
 // Add event listener to the close button
 document.getElementById('closeBtn').addEventListener('click', closeForm);

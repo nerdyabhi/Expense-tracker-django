@@ -1,8 +1,7 @@
 from django.shortcuts import render , redirect , HttpResponse
 from expense_tracker.models import *
 from django.db.models import Sum
-from django.urls import reverse
-from django.http import HttpResponseRedirect
+
 
 ### code khrab nahi hojayega?
 
@@ -90,3 +89,16 @@ def delete_transaction(request , id):
         total_expense = expense.objects.filter(user=user_obj).aggregate(total_amount=Sum('amount'))['total_amount'] or 0
         return render(request, 'welcome.html', {'u': user_obj, 'expense': db, 'total': total_expense})
 
+
+def editTransaction(request , id):
+    new_description = request.GET['expense_name']
+    new_amount = request.GET['amount']
+    u = expense.objects.get(id= id)
+    u.expense_name = new_description
+    u.amount = new_amount
+    u.save()
+    email = u.user.email
+    user_obj = user.objects.get(email=email)
+    db = expense.objects.filter(user=user_obj).values()
+    total_expense = expense.objects.filter(user=user_obj).aggregate(total_amount=Sum('amount'))['total_amount'] or 0
+    return render(request, 'welcome.html', {'u': user_obj, 'expense': db, 'total': total_expense})
