@@ -2,6 +2,7 @@ from django.shortcuts import render , redirect , HttpResponse
 from expense_tracker.models import *
 from django.contrib import messages
 from django.db.models import Sum
+from django.urls import reverse
 
 # Create your views here.
 def register(request):
@@ -48,19 +49,37 @@ def show(request ):
 
 
 def addTransaction(request):
-    email = request.GET['email']
-    description = request.GET['expense_name']
-    amount = request.GET['amount']
+    email = request.GET.get('email')
+    description = request.GET.get('expense_name')
+    amount = request.GET.get('amount')
 
-    u = user.objects.get(email = email)
+    u = user.objects.get(email=email)
 
-    exp = expense()
-    exp.expense_name = description
-    exp.amount = amount
-    exp.user = u
-    exp.save()
-    user_obj = user.objects.get(email = email)
-    db = expense.objects.filter(user = user_obj).values()
+    if expense.objects.filter(user=u, expense_name=description).exists():
+        # If description already exists for the same user
+        obj = expense.objects.get(user=u, expense_name=description)
+        obj.amount += int(amount)
+        obj.save()
+    else:
+        exp = expense(expense_name=description, amount=amount, user=u)
+        exp.save()
+
+    user_obj = user.objects.get(email=email)
+    db = expense.objects.filter(user=user_obj).values()
     total_expense = expense.objects.filter(user=user_obj).aggregate(total_amount=Sum('amount'))['total_amount'] or 0
 
     return render(request, 'welcome.html', {'u': user_obj, 'expense': db, 'total': total_expense})
+
+
+def delete_transaction(request , id):
+        u = expense.objects.get(id = id)
+        email = u.user.email
+        u.delete()
+        user_obj = user.objects.get(email=email)
+        db = expense.objects.filter(user=user_obj).values()
+        total_expense = expense.objects.filter(user=user_obj).aggregate(total_amount=Sum('amount'))['total_amount'] or 0
+
+        return redirect('')
+
+def ChangeTransaction(request):
+    pass

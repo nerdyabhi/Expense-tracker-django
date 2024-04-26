@@ -3,43 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"  />
+    <title>Expense Tracker</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f2f2f2;
+        }
+        #change_form {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 50%;
+            text-align: center;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none; 
+        }
+        #change_form #closeBtn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+        .container {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="submit"] {
+            width: 75%;
+            padding:10px 10px 5px 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .total {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .edit_btn
+        {
+            padding: 10px;
+            border: none;
+            background-color: burlywood;
+
+        }
+
+        .delete_btn
+        {
+            background-color: red;
+            padding: 10px;
+            border: none;
+            color: white;
+        }
+
+        .changeform
+        {
+            z-index: 9999;
+        }
+    </style>
 </head>
 <body>
-    Welcome {{expense__user.name}}
-
     <div class="container">
-        <form action="addTransaction" >
-            <input type="hidden" name = "email"  value="{{u.email}}">
-          <input type="text" name="expense_name" placeholder="Where spend?" required> <br>
-          <input type="number" name="amount" placeholder="Amount" > <br>
-          <input type="submit">
-          
+        <h1>Welcome, {{u.name}}!</h1>
+        <form action="addTransaction" method="get">
+            <input type="hidden" name="email" value="{{u.email}}">
+            <input type="text" name="expense_name" placeholder="Enter expense description" required><br>
+            <input type="number" name="amount" placeholder="Enter amount"><br>
+            <input type="submit" value="Add Expense">
         </form>
     </div>
-    
+
 
     <div class="show">
-        <h1>Table name  : {{expense.user__email}}</h1>
+        <h2>Your Expenses</h2>
+        <table border="1">
+            <tr>
+                <th>Last Modified</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Modify</th>
+            </tr>
+            {% for i in expense %}
+            <tr>
+                <td>{{ i.date }}</td>
+                <td>
+                        <input type="text" name="description" value="{{ i.expense_name }}" readonly>
+                </td>
+                <td>
+                        <input type="number" name="amountInput" value="{{ i.amount}}" readonly>
+                    </a>  
+                </td>
+                <td>
 
-<table border="1px">
-    <tr>
-        <td>Description</td>
-        <td>Amount</td>
-    </tr>
-    {% for i in expense %}
-    <tr>
-        </tr><td>{{i.expense_name}}</td>
-        <td>{{i.amount}}</td>
-        
-        <!-- del/{{i.id}} associated id to href to know which id to delete -->
-    </tr>
+                <!-- Tommorow get the id from a hidden text file and then do hidden stuffs with that id can't think today love you -->
+                        <input type="text" name="id" value="{{id}}"hidden>
+                        <button  id = "showForm" class = edit_btn><i class="fa-regular fa-edit"></i></button>
+                        <!-- <button type="submit">Save</button> -->
 
-    {% endfor %}
-</table>
 
-<h3>Total Expense : {{total}}</h3>
+                    <a href="del/{{i.id}}">
+                        <button type="button" name="delete_btn" class="delete_btn" > <i class="fa-regular fa-trash-can"></i></button>
+                   </a>
+                   
+                   
+                </td>
+            </tr>
+
+
+            {% endfor %}
+        </table>
+        <div class="total">Total Expense: {{ total }}</div>
     </div>
 
+    <div id="change_form">
+        <h1>Edit it</h1>
+        <form action="ChangeTransaction" method="get">
+            <i id = "closeBtn" class="fa-solid fa-square-xmark"></i>
+            <input type="hidden" name="email" value="{{u.email}}">
+            <input type="text" name="expense_name" placeholder="Enter expense description" required><br>
+            <input type="number" name="amount" placeholder="Enter amount"><br>
+            <input type="submit" value="Save Changes">
+        </form>
+    </div>
+
+    <button class="edit_btn" data-expense-id="{{ i.id }}"><i class="fa-regular fa-edit"></i></button>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+       $(document).ready(function() {
+    // Show the change_form div when needed
+    $('.edit_btn').click(function() {
+        // Get the expense ID from the data attribute
+        var expenseId = $(this).data('expense-id');
+    
+        // Set the value of expense ID in the edit form
+        $('#change_form input[name="expense_id"]').val(expenseId);
+
+        // Show the change_form div
+        $('#change_form').fadeIn();
+    });
+
+    // Close the change_form div when the close button is clicked
+    $('#change_form #closeBtn').click(function() {
+        $('#change_form').fadeOut();
+    });
+});
+
+    </script>
 </body>
 </html>
