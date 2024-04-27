@@ -10,22 +10,28 @@ def register(request):
     return render(request , 'register.html')
 
 def regi(request):
-      if request.method == 'POST':
+    if request.method == 'POST':
         name = request.POST['user_name']
         email = request.POST['user_email']
         password = request.POST['user_pass']
 
-        if user.objects.filter(email=email).exists():
-            data = {'email': email, 'message': "User Already exists. Please Login."}
-            return render(request, 'login.html', {'data': data})
+    if len(password) < 8 or not any(char.islower() for char in password) \
+                or not any(char.isupper() for char in password) \
+                or not any(char.isdigit() for char in password) \
+                or not any(char in "!@#$%^&*" for char in password):
+            return HttpResponse("Password must contain at least one lowercase letter, one uppercase letter, one number, one special character, and be at least 8 characters long")
 
-        u = user.objects.create(name=name, email=email, password=password)
-        exp = expense.objects.filter(user=u)
-        return render(request, 'welcome.html', {'u': u, 'expense': exp, 'total': 0})
+    if user.objects.filter(email= email).exists():
+        data = {'email' :email , 'message' : "User Already exists Please Login "}
+        return render(request , 'login.html' , {'data' : data})
 
-    # If the request method is not POST, redirect to some appropriate URL
-        return redirect('')  # You might want to change this redirection to suit your application
-
+    u = user()
+    u.name = name 
+    u.email = email
+    u.password = password
+    u.save()
+    exp = expense.objects.filter(user=u)
+    return render(request, 'welcome.html', {'u': u, 'expense': exp, 'total': 0})
 def login(request):
     return render(request , 'login.html')
 
@@ -131,13 +137,15 @@ def update_profile(request, email):
     if request.method == 'POST':
         new_name = request.POST.get('new_name')
         new_email = request.POST.get('new_email')
+        new_pass = request.POST.get('new_pass')
         # Fetch the user based on the provided email
         u = user.objects.get(email=new_email)
         # Update the user's details
         u.name = new_name  # Update to user.name
         u.email = new_email
+        u.password = new_pass
         u.save()
-        return render(request , 'login.html')
+        return redirect('login')
   # Redirect to profile or any other URL after update
     else:
         return redirect('edit_profile', email=email)  # Redirect if not a POST request

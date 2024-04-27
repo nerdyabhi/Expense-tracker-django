@@ -34,14 +34,25 @@
     <br>
     <div class="container">
 
-        <form action="regi" method="POST">
+        <form action="regi" method="POST" onsubmit="return validatePassword()">
             {% csrf_token %}
             <input type="text" placeholder="Enter your Name" name="user_name"> <br>
             <input type="email" placeholder="Enter your email" name="user_email"> <br>
-            <input type="password" placeholder="Enter your password" name="user_pass"> <br>
+            <input type="password" placeholder="Enter your password" id="user_pass" name="user_pass"> <br>
             <input type="submit" value="Register"> <br>
             <a href="login"> Already Have an account?</a>
         </form>
     </div>
+    <script>
+        function validatePassword() {
+            var password = document.getElementById("user_pass").value;
+            var re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
+            if (!re.test(password)) {
+                alert("Password must contain at least one lowercase letter, one uppercase letter, one number, one special character, and be at least 8 characters long");
+                return false;
+            }
+            return true;
+        }
+    </script>
 </body>
 </html>
