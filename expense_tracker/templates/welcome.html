@@ -116,6 +116,9 @@
 
 <div class="show">
     <h2>Your Expenses</h2>
+
+  
+
     <table border="1">
         <tr>
             <th>Last Modified</th>
@@ -123,7 +126,22 @@
             <th>Amount</th>
             <th>Modify</th>
         </tr>
+
         {% for i in expense %}
+
+        <div id="change_form" style="display: none;">
+            <h1>Edit it</h1>
+            <form action="edit" method="POST">
+                {% csrf_token %}
+                <i id="closeBtn" class="fa-solid fa-square-xmark"></i>
+                <input type="hidden" name="email" value="{{u.email}}">
+                <input type="hidden" name="id" value="{{i.id}}">
+                <input type="text" name="description" placeholder="Enter expense description" required><br>
+                <input type="number" name="amount" placeholder="Enter amount"><br>
+              <input type="submit"  value="Save changes">
+            </form>
+        </div>
+
         <tr>
             <td>{{ i.date }}</td>
             <td>
@@ -132,16 +150,7 @@
             <td>
                 <p  id="amountInput{{i.id}}">{{i.amount}}</p> 
             </td>
-            <div id="change_form" style="display: none;">
-                <h1>Edit it</h1>
-                <form action="/../edit/{{i.id}}" method="get">
-                    <i id="closeBtn" class="fa-solid fa-square-xmark"></i>
-                    <input type="hidden" name="email" value="{{u.email}}">
-                    <input type="text" name="expense_name" placeholder="Enter expense description" required><br>
-                    <input type="number" name="amount" placeholder="Enter amount"><br>
-                    <input type="submit" value="Save changes">
-                </form>
-            </div>
+            
         </div>
             <td>
                 <input type="text" name="id" value="{{i.id}}" hidden>
@@ -172,7 +181,7 @@ function enableEdit(id) {
 
     // var description = getElementById('amountInput' + id).value
     
-    changeForm.querySelector('input[name="expense_name"]').value = description;
+    changeForm.querySelector('input[name="description"]').value = description;
     changeForm.querySelector('input[name="amount"]').value = amount;
 }
 

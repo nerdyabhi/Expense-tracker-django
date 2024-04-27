@@ -1,6 +1,7 @@
 from django.shortcuts import render , redirect , HttpResponse
 from expense_tracker.models import *
 from django.db.models import Sum
+import datetime
 
 
 ### code khrab nahi hojayega?
@@ -79,7 +80,6 @@ def addTransaction(request):
         return redirect('')  # You might want to change this redirection to suit your application
 
 
-
 def delete_transaction(request , id):
         u = expense.objects.get(id = id)
         email = u.user.email
@@ -90,15 +90,36 @@ def delete_transaction(request , id):
         return render(request, 'welcome.html', {'u': user_obj, 'expense': db, 'total': total_expense})
 
 
-def editTransaction(request , id):
-    new_description = request.GET['expense_name']
-    new_amount = request.GET['amount']
-    u = expense.objects.get(id= id)
-    u.expense_name = new_description
-    u.amount = new_amount
-    u.save()
-    email = u.user.email
-    user_obj = user.objects.get(email=email)
-    db = expense.objects.filter(user=user_obj).values()
-    total_expense = expense.objects.filter(user=user_obj).aggregate(total_amount=Sum('amount'))['total_amount'] or 0
-    return render(request, 'welcome.html', {'u': user_obj, 'expense': db, 'total': total_expense})
+current_datetime = datetime.datetime.now() # get's the latest date and time
+
+def editTransaction(request):
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        email = request.POST.get('email')
+        description = request.POST.get('description')
+        amount = request.POST.get('amount')
+
+        to_change = expense.objects.get(id=id)
+        user_data = user.objects.get(email=email)
+
+        print(f'Data to be changed')
+        print(f'\nName: {to_change.expense_name}')
+        print(f'\nAmount : {to_change.amount}')
+
+        if expense.objects.filter(user=user_data, expense_name=description).exists():
+            obj = expense.objects.get(user=user_data, expense_name=description)
+            obj.amount = float(obj.amount) + float(amount)
+            obj.save()
+           # to_change.delete() all errors are here
+        else:
+            to_change.amount = float(amount)
+            to_change.expense_name = description
+            to_change.save()
+
+        db = expense.objects.filter(user=user_data).values()  # get all the entries for user with email = email ez
+        total = expense.objects.filter(user=user_data).aggregate(total_amount=Sum('amount'))['total_amount']
+
+        context = {'u': user_data, 'expense': db, 'total': total}
+        return render(request, 'welcome.html', context)
+    else:
+        pass
