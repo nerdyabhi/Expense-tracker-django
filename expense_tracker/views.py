@@ -4,8 +4,7 @@ from django.db.models import Sum
 import datetime
 
 
-### code khrab nahi hojayega?
-
+### code khrab nahi hojayega  
 # Create your views here.
 def register(request):
     return render(request , 'register.html')
@@ -123,3 +122,22 @@ def editTransaction(request):
         return render(request, 'welcome.html', context)
     else:
         pass
+
+def edit_profile(request,email):
+    u = user.objects.get(email=email)
+    return render(request,'edit_profile.html',{'u':u})
+
+def update_profile(request, email):
+    if request.method == 'POST':
+        new_name = request.POST.get('new_name')
+        new_email = request.POST.get('new_email')
+        # Fetch the user based on the provided email
+        u = user.objects.get(email=new_email)
+        # Update the user's details
+        u.name = new_name  # Update to user.name
+        u.email = new_email
+        u.save()
+        return render(request , 'login.html')
+  # Redirect to profile or any other URL after update
+    else:
+        return redirect('edit_profile', email=email)  # Redirect if not a POST request

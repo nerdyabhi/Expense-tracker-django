@@ -100,9 +100,69 @@
         {
             z-index: 9999;
         }
+       
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #000;
+            color: #fff;
+            width:max-content /* Adjust the header width */
+          }
+      
+          /* Style for logout and edit profile links */
+          .user-actions {
+            display: flex;
+            gap: 10px; /* Adjust spacing between links */
+            position: absolute;
+            top: 0;
+            right: 0;
+          }
+          
+      
+          .logout-link {
+            color: #000;
+            text-decoration: none;
+            border: 0.5px solid #000;
+            padding: 5px 10px;
+            border-radius: 5px;
+          }
+      
+          .edit-profile-link {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+          }
+          .user-actions a {
+            text-decoration: none;
+        }
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 5px;
+            /* Add your avatar image URL here */
+            background-image: url('https://img.freepik.com/free-vector/mysterious-mafia-man-smoking-cigarette_52683-34828.jpg?w=740&t=st=1714133769~exp=1714134369~hmac=8c997fc2feaf65c0a294e2d578155eec51c392b2c8fe2721a2b1ce17fe994e09');
+            background-size: cover;
+        }
+
     </style>
 </head>
-<body><div class="container">
+<body>
+    <header>
+        <div class="user-actions">
+            <a href="login" class="logout-link">Logout</a>
+            <a href="edit_profile/{{ u.email }}" class="edit-profile-link">
+                <span class="avatar"></span>
+            </a>
+            </a>
+            <div style="clear: both;"></div>
+        </div>
+    </header>
+
+    <div class="container">
     <h1>Welcome, {{u.name}}!</h1>
     <form action="../addTransaction" method="POST">
         {% csrf_token %}

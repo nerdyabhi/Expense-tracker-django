@@ -13,5 +13,7 @@ urlpatterns = [
     path('del/<int:id>' , views.delete_transaction),
     path('edit' , views.editTransaction),
     # path('welcome' , views.welcome)
-    
+     path('edit_profile/<str:email>/', views.edit_profile, name='edit_profile'),
+    path('upd/<str:email>/', views.update_profile, name='update_profile'),
+
 ]
